@@ -73,6 +73,30 @@
     "ES": {
       "value": 3.0,
       "period": "2025-12"
+    },
+    "HR": {
+      "value": 3.8,
+      "period": "2025-12"
+    },
+    "DE": {
+      "value": 2.0,
+      "period": "2025-12"
+    },
+    "IE": {
+      "value": 2.7,
+      "period": "2025-12"
+    },
+    "LV": {
+      "value": 3.4,
+      "period": "2025-12"
+    },
+    "PT": {
+      "value": 2.4,
+      "period": "2025-12"
+    },
+    "SI": {
+      "value": 2.6,
+      "period": "2025-12"
     }
   },
   "vat_checked": "2026-11-04",
