@@ -1,15 +1,108 @@
 {
   "updated": "2026-11-04",
-  "source": "seed values from public ECB / Eurostat releases; replaced automatically by scripts/update_rates.py",
-  "deposit": { "value": 2.5, "period": "2026-10-29" },
-  "inflation_ea": { "value": 3.8, "period": "2026-09" },
-  "mortgage_ea": { "value": 3.6, "period": "2026-08" },
-  "inflation_country": {},
+  "source": "ECB Data Portal (data-api.ecb.europa.eu), updated by scripts/update_rates.py",
+  "deposit": {
+    "value": 2.5,
+    "period": "2026-09-16"
+  },
+  "inflation_ea": {
+    "value": 1.9,
+    "period": "2025-12"
+  },
+  "mortgage_ea": {
+    "value": 3.62,
+    "period": "2026-09"
+  },
+  "inflation_country": {
+    "AT": {
+      "value": 3.8,
+      "period": "2025-12"
+    },
+    "BE": {
+      "value": 2.2,
+      "period": "2025-12"
+    },
+    "BG": {
+      "value": 3.5,
+      "period": "2025-12"
+    },
+    "CY": {
+      "value": 0.1,
+      "period": "2025-12"
+    },
+    "EE": {
+      "value": 4.0,
+      "period": "2025-12"
+    },
+    "FI": {
+      "value": 1.7,
+      "period": "2025-12"
+    },
+    "FR": {
+      "value": 0.7,
+      "period": "2025-12"
+    },
+    "GR": {
+      "value": 2.9,
+      "period": "2025-12"
+    },
+    "IT": {
+      "value": 1.2,
+      "period": "2025-12"
+    },
+    "LT": {
+      "value": 3.2,
+      "period": "2025-12"
+    },
+    "LU": {
+      "value": 3.3,
+      "period": "2025-12"
+    },
+    "MT": {
+      "value": 2.4,
+      "period": "2025-12"
+    },
+    "NL": {
+      "value": 2.5,
+      "period": "2025-12"
+    },
+    "SK": {
+      "value": 4.1,
+      "period": "2025-12"
+    },
+    "ES": {
+      "value": 3.0,
+      "period": "2025-12"
+    }
+  },
   "vat_checked": "2026-11-04",
   "vat": {
-    "AT": 20, "BE": 21, "BG": 20, "HR": 25, "CY": 19, "CZ": 21, "DK": 25,
-    "EE": 24, "FI": 25.5, "FR": 20, "DE": 19, "GR": 24, "HU": 27, "IE": 23,
-    "IT": 22, "LV": 21, "LT": 21, "LU": 17, "MT": 18, "NL": 21, "PL": 23,
-    "PT": 23, "RO": 21, "SK": 23, "SI": 22, "ES": 21, "SE": 25
+    "AT": 20,
+    "BE": 21,
+    "BG": 20,
+    "HR": 25,
+    "CY": 19,
+    "CZ": 21,
+    "DK": 25,
+    "EE": 24,
+    "FI": 25.5,
+    "FR": 20,
+    "DE": 19,
+    "GR": 24,
+    "HU": 27,
+    "IE": 23,
+    "IT": 22,
+    "LV": 21,
+    "LT": 21,
+    "LU": 17,
+    "MT": 18,
+    "NL": 21,
+    "PL": 23,
+    "PT": 23,
+    "RO": 21,
+    "SK": 23,
+    "SI": 22,
+    "ES": 21,
+    "SE": 25
   }
 }
