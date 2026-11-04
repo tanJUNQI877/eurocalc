@@ -1,0 +1,37 @@
+name: Update rates
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # every day at 06:17 UTC
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch latest ECB data
+        id: fetch
+        run: python scripts/update_rates.py
+        continue-on-error: true
+
+      - name: Commit changes
+        run: |
+          git config user.name "rates-bot"
+          git config user.email "rates-bot@users.noreply.github.com"
+          git add rates.json
+          git diff --cached --quiet || (git commit -m "Update rates" && git push)
+
+      # Red job = GitHub emails you. Happens when ECB data is unreachable
+      # or when the VAT cross-check finds a difference you should review.
+      - name: Flag problems
+        if: steps.fetch.outcome == 'failure'
+        run: exit 1
