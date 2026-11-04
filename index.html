@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EuroCalc – Financial Calculators for Europe</title>
+<meta name="description" content="Free financial calculators for Europe with live ECB data: VAT, freelancer net income, inflation, mortgage and investing. No registration. Calculated in your browser.">
+<meta property="og:title" content="EuroCalc – Financial Calculators for Europe">
+<meta property="og:description" content="VAT, freelancer net income, inflation, mortgage and investing calculators with live ECB data. Free and private.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1b33'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'%3E€%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f3f5f9;--card:#ffffff;--ink:#0b1b33;--muted:#5a6b85;--line:#e2e7f0;--soft:#eef2f9;
+  --accent:#1f5eff;--accent-ink:#ffffff;--band:#0b1b33;--band-ink:#ffffff;--band-soft:rgba(255,255,255,.1);
+  --c1:#2b62e8;--c2:#0f9d8a;--c3:#e0a21b;--c4:#e0594f;--c5:#8a98b0;
+  --shadow:0 1px 2px rgba(11,27,51,.05),0 8px 24px rgba(11,27,51,.05);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0a111e;--card:#121a2b;--ink:#e8edf7;--muted:#9aa8c2;--line:#222d44;--soft:#182238;
+    --accent:#6f9bff;--accent-ink:#0a111e;--band:#0d1628;--c1:#6f9bff;--c2:#37c3ae;--c3:#f0bb48;--c4:#f07f76;--c5:#7d8ca8;
+    --shadow:none;color-scheme:dark}
+}
+html.force-light{
+  --bg:#ffffff;--card:#ffffff;--ink:#0b1b33;--muted:#5a6b85;--line:#e2e7f0;--soft:#eef2f9;
+  --accent:#1f5eff;--accent-ink:#ffffff;--c1:#2b62e8;--c2:#0f9d8a;--c3:#e0a21b;--c4:#e0594f;--c5:#8a98b0;--shadow:none;color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);background:var(--bg);color:var(--ink);line-height:1.5;font-size:16px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header band */
+.band{background:var(--band);color:var(--band-ink)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;padding-bottom:14px}
+.brand{font-weight:800;font-size:1.2rem;letter-spacing:-.02em}
+.brand i{font-style:normal;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:#fff;color:#0b1b33;margin-right:8px;font-size:.95rem}
+.lang{width:auto;background:var(--band-soft);color:var(--band-ink);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:7px 10px}
+.lang option{color:#0b1b33}
+.hero{padding-top:18px;padding-bottom:20px}
+h1{font-size:clamp(1.55rem,4.2vw,2.3rem);line-height:1.15;margin:0 0 8px;letter-spacing:-.025em;text-wrap:balance}
+.sub{margin:0;color:rgba(255,255,255,.75);max-width:62ch}
+.live{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;align-items:center}
+.chip{background:var(--band-soft);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:7px 12px;font-size:.84rem;line-height:1.25}
+.chip b{display:block;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.chip span{opacity:.72}
+.livemeta{font-size:.78rem;opacity:.7;margin-top:8px}
+.livemeta.off{opacity:1;color:#ffd58a}
+
+/* tabs */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:16px 0 4px;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.92rem;white-space:nowrap}
+.tab[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+/* layout */
+.app{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;margin:16px 0 8px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);min-width:0}
+.inputs{position:sticky;top:12px}
+@media (max-width:900px){.inputs{position:static}}
+.card h2{margin:0 0 2px;font-size:1.1rem;letter-spacing:-.01em}
+.desc{color:var(--muted);margin:0 0 16px;font-size:.9rem}
+.fields{display:grid;gap:14px}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:5px}
+input,select{width:100%;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:10px 11px;font-variant-numeric:tabular-nums}
+.hint{font-size:.78rem;color:var(--muted);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-size:.78rem;font-weight:600;text-decoration:underline}
+.btn{margin-top:16px;width:100%;background:var(--ink);color:var(--card);border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer}
+.btn:hover{opacity:.9}
+.pdfhint{font-size:.76rem;color:var(--muted);margin:6px 0 0}
+.note{font-size:.8rem;color:var(--muted);margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+
+.results{display:grid;gap:16px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.kpis{grid-template-columns:minmax(0,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.kpi .l{font-size:.8rem;color:var(--muted);font-weight:600}
+.kpi .v{font-size:clamp(1.25rem,2.6vw,1.7rem);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi.main{background:var(--accent);border-color:var(--accent)}
+.kpi.main .l,.kpi.main .v{color:var(--accent-ink)}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.charts .wide{grid-column:1/-1}
+.charts.r12{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+@media (max-width:820px){.charts.r12{grid-template-columns:minmax(0,1fr)}}
+.card h3{margin:0 0 10px;font-size:.92rem;color:var(--muted);font-weight:700}
+.chartbox{position:relative;height:270px}
+.details .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.93rem}
+.details .row:last-child{border-bottom:0}
+.details b{font-variant-numeric:tabular-nums;text-align:right}
+
+section.about{margin:28px 0;font-size:.92rem;color:var(--muted);max-width:75ch}
+section.about h3{color:var(--ink);margin:0 0 6px;font-size:1rem}
+footer{border-top:1px solid var(--line);padding-top:20px;padding-bottom:40px;font-size:.84rem;color:var(--muted)}
+footer a,.plink{color:var(--accent);cursor:pointer;text-decoration:underline;background:none;border:0;padding:0;font-size:inherit}
+dialog{max-width:620px;width:calc(100% - 32px);border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);padding:22px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h2{margin-top:0}
+.print-only{display:none}
+
+@media print{
+  .noprint,.band,.tabs,.inputs,footer .plink{display:none!important}
+  .print-only{display:block}
+  body{background:#fff}
+  .app{display:block;margin:0}
+  .results{gap:12px}
+  .card,.kpi{box-shadow:none;break-inside:avoid}
+  .charts{grid-template-columns:1fr 1fr}
+  .chartbox{height:220px}
+  .kpi.main{background:#fff;border:2px solid #1f5eff}
+  .kpi.main .l,.kpi.main .v{color:#0b1b33}
+  .ptable{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:.92rem}
+  .ptable td{padding:5px 0;border-bottom:1px solid #ddd}
+  .ptable td:last-child{text-align:right;font-weight:600}
+}
+</style>
+</head>
+<body>
+<div class="band noprint">
+  <div class="wrap">
+    <div class="top">
+      <div class="brand"><i>€</i>EuroCalc</div>
+      <select id="lang" class="lang" aria-label="Language">
+        <option value="en">English</option><option value="de">Deutsch</option>
+        <option value="fr">Français</option><option value="es">Español</option>
+      </select>
+    </div>
+    <div class="hero">
+      <h1 id="h1"></h1>
+      <p class="sub" id="sub"></p>
+      <div class="live" id="live"></div>
+      <div class="livemeta" id="livemeta"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <nav class="tabs noprint" id="tabs" role="tablist"></nav>
+  <div class="print-only" id="printHead"></div>
+  <div class="app">
+    <div class="card inputs" id="inputs"></div>
+    <div class="results">
+      <div class="kpis" id="kpis"></div>
+      <div class="card details" id="details" hidden></div>
+      <div class="charts" id="charts"></div>
+    </div>
+  </div>
+  <section class="about noprint"><h3 id="infoT"></h3><p id="infoP"></p></section>
+</main>
+
+<footer><div class="wrap">
+  <div id="disc"></div>
+  <p><button class="plink" id="privLink"></button></p>
+  <p>© <span id="yr"></span> EuroCalc</p>
+</div></footer>
+
+<dialog id="priv"><h2 id="privT"></h2><div id="privP"></div>
+  <button class="btn" id="privClose"></button></dialog>
+
+<script src="libs/chart.umd.js"></script>
+<script>
+/* ============ translations ============ */
+const I18N = {
+en:{
+ h1:"Financial calculators for Europe",sub:"Clear numbers, live ECB data, no registration. Everything is calculated in your browser.",
+ tabs:{vat:"EU VAT",free:"Freelancer net",infl:"Inflation",mort:"Mortgage",dca:"Investing"},
+ live:{depo:"ECB deposit rate",infl:"Euro-area inflation",mort:"Mortgage rate (new loans)",upd:"Updated",src:"Source: ECB Data Portal",off:"Live data could not be loaded. Built-in default values are shown.",vat:"VAT rates checked on"},
+ useLatest:"Use latest",hInfl:"Latest: {v}% ({p})",hMort:"Euro-area average for new home loans: {v}% ({p})",hNone:"No data for this country yet",
+ inputsT:"Your inputs",detailsT:"Breakdown",pdf:"Save as PDF report",pdfHint:"Opens the print dialog. Choose “Save as PDF”.",
+ report:"Calculation report",gen:"Generated on",inputs:"Inputs",ea:"Euro area",yr:"Year",
+ vat:{t:"EU VAT calculator",d:"Add or remove VAT with the standard rate of any EU country.",country:"Country",mode:"Calculation",m1:"Net → Gross (add VAT)",m2:"Gross → Net (remove VAT)",amount:"Amount (€)",rate:"VAT rate (%)",net:"Net amount",vat:"VAT amount",gross:"Gross amount",note:"Standard rates only. Reduced rates, B2B reverse charge and OSS rules are not covered. Always verify the current rate with your tax authority.",ch1:"Gross amount split",ch2:"Standard VAT rate by country (%)",lNet:"Net",lVat:"VAT"},
+ free:{t:"Freelancer net income",d:"A simplified estimate of what you keep after expenses, social contributions and income tax.",income:"Annual revenue (€)",exp:"Business expenses per year (€)",soc:"Social contributions (% of profit)",tax:"Income tax (% of taxable profit)",profit:"Profit before tax",socAmt:"Social contributions",taxAmt:"Income tax",netY:"Net income per year",netM:"Net income per month",eff:"Total burden",note:"Simplified model using flat rates that YOU enter. Real systems have brackets, allowances and country-specific rules. Not tax advice.",ch1:"Where your revenue goes",ch2:"Net income at different revenue levels",lExp:"Expenses",lSoc:"Social contributions",lTax:"Income tax",lNet:"Net income",lRev:"Revenue vs. today"},
+ infl:{t:"Inflation & purchasing power",d:"See how inflation erodes your money and what you need to keep the same buying power.",country:"Country",amount:"Amount today (€)",years:"Years",rate:"Average annual inflation (%)",real:"Purchasing power in the future",need:"Needed for the same buying power",loss:"Loss of purchasing power",note:"Starts from the latest published inflation rate, which you can change. This is a projection, not a forecast.",ch1:"Your money over time",lNom:"Amount today",lPow:"Purchasing power",lNeed:"Needed for the same buying power"},
+ mort:{t:"Mortgage calculator",d:"Monthly payment, total cost and interest for a fixed-rate loan.",amount:"Loan amount (€)",rate:"Annual interest rate (%)",years:"Term (years)",pay:"Monthly payment",total:"Total repaid",int:"Total interest",note:"Fixed rate, equal monthly payments. Fees, insurance, notary costs and property taxes are not included. For information only.",ch1:"Principal vs interest",ch2:"Balance and interest paid over time",lPrin:"Principal",lInt:"Interest",lBal:"Remaining balance",lCum:"Interest paid so far"},
+ dca:{t:"Monthly investing growth",d:"See what regular monthly investing could become with compound growth.",pmt:"Monthly investment (€)",years:"Years",rate:"Expected annual return (%)",invested:"Total invested",final:"Final value",gain:"Growth earned",note:"Assumes a constant return, no taxes and no fees. Real markets fluctuate and returns are not guaranteed. A projection, not a forecast.",ch1:"Invested vs growth, by year",ch2:"Scenarios",lInv:"Invested",lGro:"Growth",lLow:"Lower return",lBase:"Expected return",lHigh:"Higher return"},
+ infoT:"About this site",infoP:"EuroCalc offers simple calculators for freelancers, investors and expats in Europe. Calculations happen in your browser; nothing you type is sent to us. Rates come from public ECB data and are refreshed automatically every day.",
+ disc:"Disclaimer: results are estimates for information only and are not financial, tax or legal advice. Consult a qualified professional.",
+ privLink:"Privacy policy",privT:"Privacy policy",privP:"<p>This site needs no registration and collects no names, emails or financial data. All calculations run locally in your browser and the values you enter are never sent to our servers.</p><p>The site sets no cookies and loads no third-party scripts, fonts or trackers. Charts are served from this site. Reference rates (ECB data) are stored on this site and refreshed once a day on the server side, so your browser never contacts the ECB.</p><p>Our hosting provider may process technical data such as your IP address in server logs to deliver the page. If advertising or payment services are added in the future, this policy will be updated and consent requested where required.</p>",close:"Close"},
+de:{
+ h1:"Finanzrechner für Europa",sub:"Klare Zahlen, aktuelle EZB-Daten, keine Registrierung. Alles wird in Ihrem Browser berechnet.",
+ tabs:{vat:"EU-MwSt.",free:"Netto Freiberufler",infl:"Inflation",mort:"Hypothek",dca:"Sparplan"},
+ live:{depo:"EZB-Einlagensatz",infl:"Inflation im Euroraum",mort:"Hypothekenzins (Neugeschäft)",upd:"Aktualisiert",src:"Quelle: EZB Data Portal",off:"Live-Daten konnten nicht geladen werden. Es werden Standardwerte angezeigt.",vat:"MwSt.-Sätze geprüft am"},
+ useLatest:"Aktuellen Wert übernehmen",hInfl:"Aktuell: {v} % ({p})",hMort:"Durchschnitt im Euroraum für neue Wohnbaukredite: {v} % ({p})",hNone:"Für dieses Land liegen noch keine Daten vor",
+ inputsT:"Ihre Eingaben",detailsT:"Aufschlüsselung",pdf:"Als PDF-Bericht speichern",pdfHint:"Öffnet den Druckdialog. Wählen Sie „Als PDF speichern“.",
+ report:"Berechnungsbericht",gen:"Erstellt am",inputs:"Eingaben",ea:"Euroraum",yr:"Jahr",
+ vat:{t:"EU-Mehrwertsteuerrechner",d:"MwSt. hinzufügen oder herausrechnen, mit dem Normalsatz eines EU-Landes.",country:"Land",mode:"Berechnung",m1:"Netto → Brutto (MwSt. addieren)",m2:"Brutto → Netto (MwSt. herausrechnen)",amount:"Betrag (€)",rate:"MwSt.-Satz (%)",net:"Nettobetrag",vat:"MwSt.-Betrag",gross:"Bruttobetrag",note:"Nur Normalsätze. Ermäßigte Sätze, Reverse-Charge (B2B) und OSS-Regeln sind nicht berücksichtigt. Aktuellen Satz bitte bei Ihrer Steuerbehörde prüfen.",ch1:"Aufteilung des Bruttobetrags",ch2:"MwSt.-Normalsatz nach Land (%)",lNet:"Netto",lVat:"MwSt."},
+ free:{t:"Netto für Freiberufler",d:"Vereinfachte Schätzung, was nach Ausgaben, Sozialabgaben und Einkommensteuer übrig bleibt.",income:"Jahresumsatz (€)",exp:"Betriebsausgaben pro Jahr (€)",soc:"Sozialabgaben (% vom Gewinn)",tax:"Einkommensteuer (% vom zu versteuernden Gewinn)",profit:"Gewinn vor Steuern",socAmt:"Sozialabgaben",taxAmt:"Einkommensteuer",netY:"Nettoeinkommen pro Jahr",netM:"Nettoeinkommen pro Monat",eff:"Gesamtbelastung",note:"Vereinfachtes Modell mit Pauschalsätzen, die SIE eingeben. Reale Systeme haben Stufen, Freibeträge und länderspezifische Regeln. Keine Steuerberatung.",ch1:"Wohin Ihr Umsatz fließt",ch2:"Nettoeinkommen bei unterschiedlichem Umsatz",lExp:"Ausgaben",lSoc:"Sozialabgaben",lTax:"Einkommensteuer",lNet:"Nettoeinkommen",lRev:"Umsatz im Vergleich zu heute"},
+ infl:{t:"Inflation & Kaufkraft",d:"Sehen Sie, wie Inflation Ihr Geld entwertet und was Sie für gleiche Kaufkraft brauchen.",country:"Land",amount:"Betrag heute (€)",years:"Jahre",rate:"Durchschnittliche Inflation pro Jahr (%)",real:"Kaufkraft in der Zukunft",need:"Nötig für gleiche Kaufkraft",loss:"Kaufkraftverlust",note:"Startwert ist die zuletzt veröffentlichte Inflationsrate; Sie können sie ändern. Dies ist eine Projektion, keine Prognose.",ch1:"Ihr Geld im Zeitverlauf",lNom:"Betrag heute",lPow:"Kaufkraft",lNeed:"Nötig für gleiche Kaufkraft"},
+ mort:{t:"Hypothekenrechner",d:"Monatsrate, Gesamtkosten und Zinsen eines Darlehens mit festem Zinssatz.",amount:"Darlehensbetrag (€)",rate:"Jahreszins (%)",years:"Laufzeit (Jahre)",pay:"Monatsrate",total:"Gesamtrückzahlung",int:"Zinsen gesamt",note:"Fester Zinssatz, gleichbleibende Monatsraten. Gebühren, Versicherung, Notar und Grunderwerbsteuer sind nicht enthalten. Nur zur Information.",ch1:"Tilgung vs. Zinsen",ch2:"Restschuld und gezahlte Zinsen im Zeitverlauf",lPrin:"Tilgung",lInt:"Zinsen",lBal:"Restschuld",lCum:"Bisher gezahlte Zinsen"},
+ dca:{t:"Wachstum bei monatlichem Sparen",d:"Sehen Sie, was regelmäßiges monatliches Investieren mit Zinseszins werden kann.",pmt:"Monatliche Sparrate (€)",years:"Jahre",rate:"Erwartete Jahresrendite (%)",invested:"Gesamt eingezahlt",final:"Endwert",gain:"Erzielter Zuwachs",note:"Annahme: konstante Rendite, keine Steuern, keine Kosten. Reale Märkte schwanken, Renditen sind nicht garantiert. Eine Projektion, keine Prognose.",ch1:"Eingezahlt vs. Zuwachs, pro Jahr",ch2:"Szenarien",lInv:"Eingezahlt",lGro:"Zuwachs",lLow:"Niedrigere Rendite",lBase:"Erwartete Rendite",lHigh:"Höhere Rendite"},
+ infoT:"Über diese Seite",infoP:"EuroCalc bietet einfache Rechner für Freiberufler, Anleger und Expats in Europa. Die Berechnung erfolgt in Ihrem Browser; Ihre Eingaben werden nicht an uns gesendet. Die Zinsdaten stammen aus öffentlichen EZB-Daten und werden täglich automatisch aktualisiert.",
+ disc:"Haftungsausschluss: Die Ergebnisse sind Schätzungen nur zu Informationszwecken und keine Finanz-, Steuer- oder Rechtsberatung. Bitte wenden Sie sich an eine qualifizierte Fachperson.",
+ privLink:"Datenschutzerklärung",privT:"Datenschutzerklärung",privP:"<p>Diese Seite erfordert keine Registrierung und erhebt keine Namen, E-Mail-Adressen oder Finanzdaten. Alle Berechnungen laufen lokal in Ihrem Browser; eingegebene Werte werden nie an unsere Server übertragen.</p><p>Die Seite setzt keine Cookies und lädt keine Skripte, Schriften oder Tracker von Dritten. Diagramme werden von dieser Seite ausgeliefert. Referenzzinsen (EZB-Daten) liegen auf dieser Seite und werden einmal täglich serverseitig aktualisiert; Ihr Browser kontaktiert die EZB nicht.</p><p>Unser Hosting-Anbieter kann technische Daten wie die IP-Adresse in Server-Logs verarbeiten, um die Seite auszuliefern. Falls künftig Werbe- oder Zahlungsdienste hinzukommen, wird diese Erklärung aktualisiert und, wo erforderlich, eine Einwilligung eingeholt.</p>",close:"Schließen"},
+fr:{
+ h1:"Calculateurs financiers pour l'Europe",sub:"Des chiffres clairs, des données BCE en direct, sans inscription. Tout est calculé dans votre navigateur.",
+ tabs:{vat:"TVA UE",free:"Net freelance",infl:"Inflation",mort:"Prêt immo",dca:"Investissement"},
+ live:{depo:"Taux de dépôt BCE",infl:"Inflation zone euro",mort:"Taux immobilier (nouveaux prêts)",upd:"Mis à jour",src:"Source : BCE Data Portal",off:"Impossible de charger les données en direct. Valeurs par défaut affichées.",vat:"Taux de TVA vérifiés le"},
+ useLatest:"Utiliser la dernière valeur",hInfl:"Dernière valeur : {v} % ({p})",hMort:"Moyenne zone euro pour les nouveaux prêts immobiliers : {v} % ({p})",hNone:"Pas encore de données pour ce pays",
+ inputsT:"Vos données",detailsT:"Détail",pdf:"Enregistrer en rapport PDF",pdfHint:"Ouvre la fenêtre d'impression. Choisissez « Enregistrer au format PDF ».",
+ report:"Rapport de calcul",gen:"Généré le",inputs:"Données saisies",ea:"Zone euro",yr:"Année",
+ vat:{t:"Calculateur de TVA UE",d:"Ajoutez ou retirez la TVA avec le taux normal d'un pays de l'UE.",country:"Pays",mode:"Calcul",m1:"HT → TTC (ajouter la TVA)",m2:"TTC → HT (retirer la TVA)",amount:"Montant (€)",rate:"Taux de TVA (%)",net:"Montant HT",vat:"Montant de TVA",gross:"Montant TTC",note:"Taux normaux uniquement. Les taux réduits, l'autoliquidation B2B et le guichet OSS ne sont pas couverts. Vérifiez toujours le taux en vigueur auprès de votre administration fiscale.",ch1:"Répartition du montant TTC",ch2:"Taux normal de TVA par pays (%)",lNet:"HT",lVat:"TVA"},
+ free:{t:"Revenu net pour indépendants",d:"Estimation simplifiée de ce qu'il vous reste après charges, cotisations sociales et impôt.",income:"Chiffre d'affaires annuel (€)",exp:"Frais professionnels par an (€)",soc:"Cotisations sociales (% du bénéfice)",tax:"Impôt sur le revenu (% du bénéfice imposable)",profit:"Bénéfice avant impôt",socAmt:"Cotisations sociales",taxAmt:"Impôt sur le revenu",netY:"Revenu net par an",netM:"Revenu net par mois",eff:"Prélèvement total",note:"Modèle simplifié avec des taux forfaitaires que VOUS saisissez. Les systèmes réels ont des tranches, abattements et règles propres à chaque pays. Ceci n'est pas un conseil fiscal.",ch1:"Où va votre chiffre d'affaires",ch2:"Revenu net selon le chiffre d'affaires",lExp:"Frais",lSoc:"Cotisations sociales",lTax:"Impôt sur le revenu",lNet:"Revenu net",lRev:"Chiffre d'affaires vs aujourd'hui"},
+ infl:{t:"Inflation & pouvoir d'achat",d:"Voyez comment l'inflation érode votre argent et ce qu'il faut pour conserver le même pouvoir d'achat.",country:"Pays",amount:"Montant aujourd'hui (€)",years:"Années",rate:"Inflation annuelle moyenne (%)",real:"Pouvoir d'achat dans le futur",need:"Nécessaire pour le même pouvoir d'achat",loss:"Perte de pouvoir d'achat",note:"Le point de départ est le dernier taux d'inflation publié, que vous pouvez modifier. C'est une projection, pas une prévision.",ch1:"Votre argent au fil du temps",lNom:"Montant aujourd'hui",lPow:"Pouvoir d'achat",lNeed:"Nécessaire pour le même pouvoir d'achat"},
+ mort:{t:"Calculateur de prêt immobilier",d:"Mensualité, coût total et intérêts d'un prêt à taux fixe.",amount:"Montant du prêt (€)",rate:"Taux d'intérêt annuel (%)",years:"Durée (années)",pay:"Mensualité",total:"Total remboursé",int:"Total des intérêts",note:"Taux fixe, mensualités constantes. Frais, assurance, frais de notaire et taxes foncières non inclus. À titre informatif.",ch1:"Capital vs intérêts",ch2:"Capital restant dû et intérêts payés",lPrin:"Capital",lInt:"Intérêts",lBal:"Capital restant dû",lCum:"Intérêts payés à ce jour"},
+ dca:{t:"Croissance d'un investissement mensuel",d:"Voyez ce que peut devenir un investissement mensuel régulier avec les intérêts composés.",pmt:"Investissement mensuel (€)",years:"Années",rate:"Rendement annuel attendu (%)",invested:"Total investi",final:"Valeur finale",gain:"Gain généré",note:"Suppose un rendement constant, sans impôts ni frais. Les marchés réels fluctuent et les rendements ne sont pas garantis. Une projection, pas une prévision.",ch1:"Investi vs gain, par année",ch2:"Scénarios",lInv:"Investi",lGro:"Gain",lLow:"Rendement plus faible",lBase:"Rendement attendu",lHigh:"Rendement plus élevé"},
+ infoT:"À propos de ce site",infoP:"EuroCalc propose des calculateurs simples pour les indépendants, investisseurs et expatriés en Europe. Les calculs se font dans votre navigateur ; rien de ce que vous saisissez ne nous est envoyé. Les taux proviennent de données publiques de la BCE et sont actualisés automatiquement chaque jour.",
+ disc:"Avertissement : les résultats sont des estimations à titre informatif et ne constituent pas un conseil financier, fiscal ou juridique. Consultez un professionnel qualifié.",
+ privLink:"Politique de confidentialité",privT:"Politique de confidentialité",privP:"<p>Ce site ne demande aucune inscription et ne collecte ni noms, ni e-mails, ni données financières. Tous les calculs s'exécutent localement dans votre navigateur et les valeurs saisies ne sont jamais transmises à nos serveurs.</p><p>Le site ne dépose aucun cookie et ne charge ni script, ni police, ni traceur tiers. Les graphiques sont servis par ce site. Les taux de référence (données BCE) sont stockés sur ce site et actualisés une fois par jour côté serveur ; votre navigateur ne contacte jamais la BCE.</p><p>Notre hébergeur peut traiter des données techniques telles que l'adresse IP dans ses journaux serveur pour délivrer la page. Si des services publicitaires ou de paiement sont ajoutés, cette politique sera mise à jour et le consentement sera demandé lorsque nécessaire.</p>",close:"Fermer"},
+es:{
+ h1:"Calculadoras financieras para Europa",sub:"Cifras claras, datos del BCE en vivo, sin registro. Todo se calcula en tu navegador.",
+ tabs:{vat:"IVA UE",free:"Neto autónomo",infl:"Inflación",mort:"Hipoteca",dca:"Inversión"},
+ live:{depo:"Tipo de depósito BCE",infl:"Inflación zona euro",mort:"Tipo hipotecario (nuevos préstamos)",upd:"Actualizado",src:"Fuente: BCE Data Portal",off:"No se pudieron cargar los datos en vivo. Se muestran valores predeterminados.",vat:"Tipos de IVA verificados el"},
+ useLatest:"Usar el último valor",hInfl:"Último dato: {v} % ({p})",hMort:"Media de la zona euro para nuevos préstamos de vivienda: {v} % ({p})",hNone:"Aún no hay datos para este país",
+ inputsT:"Tus datos",detailsT:"Desglose",pdf:"Guardar como informe PDF",pdfHint:"Abre el cuadro de impresión. Elige «Guardar como PDF».",
+ report:"Informe de cálculo",gen:"Generado el",inputs:"Datos introducidos",ea:"Zona euro",yr:"Año",
+ vat:{t:"Calculadora de IVA de la UE",d:"Añade o quita el IVA con el tipo general de cualquier país de la UE.",country:"País",mode:"Cálculo",m1:"Neto → Bruto (añadir IVA)",m2:"Bruto → Neto (quitar IVA)",amount:"Importe (€)",rate:"Tipo de IVA (%)",net:"Importe neto",vat:"Importe de IVA",gross:"Importe bruto",note:"Solo tipos generales. No se cubren los tipos reducidos, la inversión del sujeto pasivo B2B ni las reglas OSS. Verifica siempre el tipo vigente con tu administración tributaria.",ch1:"Reparto del importe bruto",ch2:"Tipo general de IVA por país (%)",lNet:"Neto",lVat:"IVA"},
+ free:{t:"Ingresos netos para autónomos",d:"Estimación simplificada de lo que te queda tras gastos, cotizaciones sociales e impuesto sobre la renta.",income:"Facturación anual (€)",exp:"Gastos profesionales al año (€)",soc:"Cotizaciones sociales (% del beneficio)",tax:"Impuesto sobre la renta (% del beneficio imponible)",profit:"Beneficio antes de impuestos",socAmt:"Cotizaciones sociales",taxAmt:"Impuesto sobre la renta",netY:"Ingreso neto anual",netM:"Ingreso neto mensual",eff:"Carga total",note:"Modelo simplificado con tipos fijos que TÚ introduces. Los sistemas reales tienen tramos, deducciones y reglas propias de cada país. No es asesoramiento fiscal.",ch1:"A dónde va tu facturación",ch2:"Ingreso neto según la facturación",lExp:"Gastos",lSoc:"Cotizaciones sociales",lTax:"Impuesto sobre la renta",lNet:"Ingreso neto",lRev:"Facturación frente a hoy"},
+ infl:{t:"Inflación y poder adquisitivo",d:"Mira cómo la inflación erosiona tu dinero y cuánto necesitas para mantener el mismo poder adquisitivo.",country:"País",amount:"Importe hoy (€)",years:"Años",rate:"Inflación media anual (%)",real:"Poder adquisitivo en el futuro",need:"Necesario para el mismo poder adquisitivo",loss:"Pérdida de poder adquisitivo",note:"El punto de partida es la última inflación publicada, que puedes cambiar. Es una proyección, no una predicción.",ch1:"Tu dinero a lo largo del tiempo",lNom:"Importe hoy",lPow:"Poder adquisitivo",lNeed:"Necesario para el mismo poder adquisitivo"},
+ mort:{t:"Calculadora de hipoteca",d:"Cuota mensual, coste total e intereses de un préstamo a tipo fijo.",amount:"Importe del préstamo (€)",rate:"Tipo de interés anual (%)",years:"Plazo (años)",pay:"Cuota mensual",total:"Total devuelto",int:"Intereses totales",note:"Tipo fijo, cuotas mensuales iguales. No incluye comisiones, seguros, notaría ni impuestos. Solo informativo.",ch1:"Capital frente a intereses",ch2:"Saldo pendiente e intereses pagados",lPrin:"Capital",lInt:"Intereses",lBal:"Saldo pendiente",lCum:"Intereses pagados hasta ahora"},
+ dca:{t:"Crecimiento de la inversión mensual",d:"Mira en qué puede convertirse una inversión mensual regular con interés compuesto.",pmt:"Inversión mensual (€)",years:"Años",rate:"Rentabilidad anual esperada (%)",invested:"Total invertido",final:"Valor final",gain:"Crecimiento obtenido",note:"Supone una rentabilidad constante, sin impuestos ni comisiones. Los mercados reales fluctúan y la rentabilidad no está garantizada. Una proyección, no una predicción.",ch1:"Invertido frente a crecimiento, por año",ch2:"Escenarios",lInv:"Invertido",lGro:"Crecimiento",lLow:"Menor rentabilidad",lBase:"Rentabilidad esperada",lHigh:"Mayor rentabilidad"},
+ infoT:"Acerca de este sitio",infoP:"EuroCalc ofrece calculadoras sencillas para autónomos, inversores y expatriados en Europa. Los cálculos se hacen en tu navegador; nada de lo que escribes se envía a nosotros. Los tipos proceden de datos públicos del BCE y se actualizan automáticamente cada día.",
+ disc:"Aviso: los resultados son estimaciones meramente informativas y no constituyen asesoramiento financiero, fiscal ni legal. Consulta con un profesional cualificado.",
+ privLink:"Política de privacidad",privT:"Política de privacidad",privP:"<p>Este sitio no requiere registro y no recoge nombres, correos ni datos financieros. Todos los cálculos se ejecutan localmente en tu navegador y los valores que introduces nunca se envían a nuestros servidores.</p><p>El sitio no instala cookies ni carga scripts, fuentes o rastreadores de terceros. Los gráficos se sirven desde este sitio. Los tipos de referencia (datos del BCE) se guardan en este sitio y se actualizan una vez al día en el servidor; tu navegador nunca contacta con el BCE.</p><p>Nuestro proveedor de alojamiento puede tratar datos técnicos como la dirección IP en los registros del servidor para entregar la página. Si en el futuro se añaden servicios de publicidad o de pago, esta política se actualizará y se solicitará el consentimiento cuando sea necesario.</p>",close:"Cerrar"}
+};
+const LOCALE={en:"en-IE",de:"de-DE",fr:"fr-FR",es:"es-ES"};
+const EURO=["AT","BE","BG","HR","CY","EE","FI","FR","DE","GR","IE","IT","LV","LT","LU","MT","NL","PT","SK","SI","ES"];
+
+/* Built-in defaults, used when rates.json cannot be loaded */
+const FALLBACK={updated:"2026-11-04",deposit:{value:2.5,period:"2026-10-29"},inflation_ea:{value:3.8,period:"2026-09"},
+ mortgage_ea:{value:3.6,period:"2026-08"},inflation_country:{},vat_checked:"2026-11-04",
+ vat:{AT:20,BE:21,BG:20,HR:25,CY:19,CZ:21,DK:25,EE:24,FI:25.5,FR:20,DE:19,GR:24,HU:27,IE:23,IT:22,LV:21,LT:21,LU:17,MT:18,NL:21,PL:23,PT:23,RO:21,SK:23,SI:22,ES:21,SE:25}};
+
+let lang="en",tool="vat",RATES=FALLBACK,LIVE=false,last=null,charts={},forceLight=false;
+const $=id=>document.getElementById(id);
+const T=()=>I18N[lang];
+
+/* ============ formatting ============ */
+const eur=n=>new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:"EUR"}).format(n);
+const eurC=n=>new Intl.NumberFormat(LOCALE[lang],{style:"currency",currency:"EUR",notation:"compact",maximumFractionDigits:1}).format(n);
+const pct=n=>new Intl.NumberFormat(LOCALE[lang],{maximumFractionDigits:2}).format(n)+" %";
+const num=id=>{const el=$(id);if(!el)return 0;const v=parseFloat(String(el.value).replace(",","."));return isFinite(v)?v:0};
+function fmtPeriod(p){
+  if(!p)return"";
+  const m=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(p);if(!m)return p;
+  const d=new Date(Date.UTC(+m[1],+m[2]-1,m[3]?+m[3]:1));
+  return new Intl.DateTimeFormat(LOCALE[lang],m[3]?{year:"numeric",month:"short",day:"numeric",timeZone:"UTC"}:{year:"numeric",month:"short",timeZone:"UTC"}).format(d);
+}
+const CN={};
+function countryName(code){
+  if(code==="EA")return T().ea;
+  if(!CN[lang]){CN[lang]={};try{const dn=new Intl.DisplayNames([LOCALE[lang]],{type:"region"});
+    Object.keys(RATES.vat).forEach(c=>CN[lang][c]=dn.of(c))}catch(e){}}
+  return CN[lang][code]||code;
+}
+const tpl=(s,o)=>s.replace(/\{(\w+)\}/g,(_,k)=>o[k]);
+
+/* ============ rates ============ */
+function loadRates(){
+  const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),3000);
+  return fetch("rates.json",{cache:"no-cache",signal:ctl.signal})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(j=>{RATES=Object.assign({},FALLBACK,j);RATES.vat=Object.assign({},FALLBACK.vat,j.vat||{});LIVE=true})
+    .catch(()=>{LIVE=false})
+    .finally(()=>clearTimeout(to));
+}
+function renderLive(){
+  const t=T(),L=t.live,box=$("live");box.innerHTML="";
+  const items=[["deposit",L.depo],["inflation_ea",L.infl],["mortgage_ea",L.mort]];
+  items.forEach(([k,label])=>{const r=RATES[k];if(!r||typeof r.value!=="number")return;
+    const d=document.createElement("div");d.className="chip";
+    d.innerHTML=`<span>${label}</span><b>${pct(r.value)}</b><span>${fmtPeriod(r.period)}</span>`;box.appendChild(d)});
+  const m=$("livemeta");
+  if(LIVE){m.className="livemeta";m.textContent=`${L.upd} ${fmtPeriod(RATES.updated)} · ${L.src} · ${L.vat} ${fmtPeriod(RATES.vat_checked)}`}
+  else{m.className="livemeta off";m.textContent=L.off}
+}
+
+/* ============ static render ============ */
+function renderStatic(){
+  const t=T();document.documentElement.lang=lang;
+  $("h1").textContent=t.h1;$("sub").textContent=t.sub;
+  $("infoT").textContent=t.infoT;$("infoP").textContent=t.infoP;
+  $("disc").textContent=t.disc;$("privLink").textContent=t.privLink;
+  $("privT").textContent=t.privT;$("privP").innerHTML=t.privP;$("privClose").textContent=t.close;
+  $("yr").textContent=new Date().getFullYear();
+  document.title=t.tabs[tool]+" – EuroCalc";
+  const tabs=$("tabs");tabs.innerHTML="";
+  Object.keys(t.tabs).forEach(k=>{
+    const b=document.createElement("button");b.className="tab";b.setAttribute("role","tab");
+    b.setAttribute("aria-selected",String(k===tool));b.textContent=t.tabs[k];
+    b.onclick=()=>{tool=k;location.hash=k;renderStatic();renderTool()};tabs.appendChild(b);
+  });
+  renderLive();
+}
+
+/* ============ inputs ============ */
+const field=(id,label,val,step,hint)=>`<div><label for="${id}">${label}</label><input id="${id}" type="number" inputmode="decimal" step="${step||"any"}" value="${val}">${hint?`<div class="hint" id="${id}Hint"></div>`:""}</div>`;
+const CHARTS={vat:[["c1",0],["c2",0]],free:[["c1",0],["c2",0]],infl:[["c1",1]],mort:[["c1",0],["c2",0]],dca:[["c1",0],["c2",0]]};
+
+function sortedCountries(codes){return codes.slice().sort((a,b)=>countryName(a).localeCompare(countryName(b),LOCALE[lang]))}
+
+function renderTool(){
+  const t=T(),s=t[tool],vatR=RATES.vat;
+  let h=`<h2>${s.t}</h2><p class="desc">${s.d}</p><div class="fields">`;
+  if(tool==="vat"){
+    const opts=sortedCountries(Object.keys(vatR)).map(c=>`<option value="${c}" ${c==="DE"?"selected":""}>${countryName(c)} (${vatR[c]}%)</option>`).join("");
+    h+=`<div><label for="country">${s.country}</label><select id="country">${opts}</select></div>
+        <div><label for="mode">${s.mode}</label><select id="mode"><option value="1">${s.m1}</option><option value="2">${s.m2}</option></select></div>`
+      +field("amount",s.amount,1000)+field("rate",s.rate,vatR.DE,"0.1");
+  }else if(tool==="free"){
+    h+=field("income",s.income,60000)+field("exp",s.exp,8000)+field("soc",s.soc,20,"0.1")+field("tax",s.tax,22,"0.1");
+  }else if(tool==="infl"){
+    const ic=RATES.inflation_country||{};
+    const opts=`<option value="EA">${t.ea}</option>`+sortedCountries(EURO).map(c=>`<option value="${c}">${countryName(c)}${ic[c]?` (${ic[c].value}%)`:""}</option>`).join("");
+    const start=RATES.inflation_ea&&typeof RATES.inflation_ea.value==="number"?RATES.inflation_ea.value:2.5;
+    h+=`<div><label for="country">${s.country}</label><select id="country">${opts}</select></div>`
+      +field("amount",s.amount,10000)+field("years",s.years,10,"1")+field("rate",s.rate,start,"0.1",true);
+  }else if(tool==="mort"){
+    const r=RATES.mortgage_ea,start=r&&typeof r.value==="number"?r.value:3.5;
+    h+=field("amount",s.amount,250000)+field("rate",s.rate,start,"0.01",true)+field("years",s.years,25,"1");
+  }else{
+    h+=field("pmt",s.pmt,300)+field("years",s.years,20,"1")+field("rate",s.rate,6,"0.1");
+  }
+  h+=`</div><button class="btn" id="pdfBtn">${t.pdf}</button><p class="pdfhint">${t.pdfHint}</p><p class="note">${s.note}</p>`;
+  $("inputs").innerHTML=h;
+  $("charts").className="charts"+(tool==="vat"||tool==="free"?" r12":"");
+  $("charts").innerHTML=CHARTS[tool].map(([id,wide])=>`<div class="card ${wide?"wide":""}"><h3 id="${id}T"></h3><div class="chartbox"><canvas id="${id}" role="img"></canvas></div></div>`).join("");
+  Object.keys(charts).forEach(k=>{charts[k].destroy();delete charts[k]});
+
+  $("inputs").querySelectorAll("input,select").forEach(el=>el.addEventListener("input",e=>{
+    if(tool==="vat"&&e.target.id==="country")$("rate").value=RATES.vat[e.target.value];
+    if(tool==="infl"&&e.target.id==="country"){const v=e.target.value==="EA"?RATES.inflation_ea:(RATES.inflation_country||{})[e.target.value];
+      if(v&&typeof v.value==="number")$("rate").value=v.value}
+    if(tool==="infl"&&e.target.id==="country")setHint();
+    compute();
+  }));
+  $("pdfBtn").onclick=()=>window.print();
+  setHint();compute();
+}
+
+function setHint(){
+  const t=T(),h=$("rateHint");if(!h)return;
+  let v=null,msg="";
+  if(tool==="mort"){v=RATES.mortgage_ea;if(v&&typeof v.value==="number")msg=tpl(t.hMort,{v:v.value,p:fmtPeriod(v.period)})}
+  if(tool==="infl"){const c=$("country").value;v=c==="EA"?RATES.inflation_ea:(RATES.inflation_country||{})[c];
+    msg=v&&typeof v.value==="number"?tpl(t.hInfl,{v:v.value,p:fmtPeriod(v.period)}):t.hNone}
+  h.innerHTML="";
+  if(!msg)return;
+  const sp=document.createElement("span");sp.textContent=msg;h.appendChild(sp);
+  if(v&&typeof v.value==="number"){const b=document.createElement("button");b.type="button";b.className="link";b.textContent=t.useLatest;
+    b.onclick=()=>{$("rate").value=v.value;compute()};h.appendChild(b)}
+}
+
+/* ============ charts ============ */
+function palette(){const cs=getComputedStyle(document.documentElement),g=n=>cs.getPropertyValue(n).trim();
+  return{c1:g("--c1"),c2:g("--c2"),c3:g("--c3"),c4:g("--c4"),c5:g("--c5"),muted:g("--muted"),line:g("--line"),card:g("--card"),ink:g("--ink")}}
+const centerText={id:"centerText",afterDraw(ch,_a,o){if(!o||!o.text)return;const a=ch.chartArea,x=(a.left+a.right)/2,y=(a.top+a.bottom)/2,c=ch.ctx;
+  c.save();c.textAlign="center";c.textBaseline="middle";c.fillStyle=o.color;c.font="800 24px system-ui,sans-serif";c.fillText(o.text,x,y-8);
+  c.fillStyle=o.sub;c.font="600 12px system-ui,sans-serif";c.fillText(o.label||"",x,y+14);c.restore()}};
+if(window.Chart)Chart.register(centerText);
+
+function mk(id,title,cfg){
+  const el=$(id);if(!el||!window.Chart)return;
+  $(id+"T").textContent=title;
+  if(charts[id])charts[id].destroy();
+  cfg.options=Object.assign({responsive:true,maintainAspectRatio:false,animation:false},cfg.options||{});
+  Chart.defaults.font.family=getComputedStyle(document.body).fontFamily;
+  charts[id]=new Chart(el,cfg);
+}
+const legend=p=>({position:"bottom",labels:{color:p.muted,usePointStyle:true,pointStyle:"rectRounded",boxWidth:10,padding:14}});
+const axes=(p,o={})=>({x:{stacked:!!o.stacked,grid:{display:false},border:{color:p.line},ticks:{color:p.muted,maxTicksLimit:o.xMax||12},title:o.xTitle?{display:true,text:o.xTitle,color:p.muted}:{display:false}},
+  y:{stacked:!!o.stacked,beginAtZero:true,grid:{color:p.line},border:{display:false},ticks:{color:p.muted,callback:v=>eurC(v)}}});
+const tipEur={callbacks:{label:c=>` ${c.dataset.label||c.label}: ${eur(c.parsed.y!==undefined&&c.chart.config.type!=="doughnut"?c.parsed.y:c.parsed)}`}};
+function doughnut(id,title,labels,data,colors,center,p){
+  mk(id,title,{type:"doughnut",data:{labels,datasets:[{data,backgroundColor:colors,borderColor:p.card,borderWidth:3}]},
+    options:{cutout:"68%",plugins:{legend:legend(p),tooltip:{callbacks:{label:c=>` ${c.label}: ${eur(c.parsed)}`}},centerText:{text:center[0],label:center[1],color:p.ink,sub:p.muted}}}});
+}
+
+/* ============ compute ============ */
+function compute(){
+  const t=T(),s=t[tool],p=palette();let inputs=[],kpis=[],details=null;
+  if(tool==="vat"){
+    const amt=Math.max(0,num("amount")),r=Math.max(0,num("rate")),mode=$("mode").value,cc=$("country").value;
+    let net,vat,gross;if(mode==="1"){net=amt;vat=net*r/100;gross=net+vat}else{gross=amt;net=gross/(1+r/100);vat=gross-net}
+    inputs=[[s.country,countryName(cc)],[s.mode,mode==="1"?s.m1:s.m2],[s.amount,eur(amt)],[s.rate,pct(r)]];
+    kpis=[[s.gross,eur(gross),1],[s.net,eur(net)],[s.vat,eur(vat)]];
+    doughnut("c1",s.ch1,[s.lNet,s.lVat],[net,vat],[p.c1,p.c3],[gross>0?pct(vat/gross*100):"–",s.lVat],p);
+    const codes=Object.keys(RATES.vat).sort((a,b)=>RATES.vat[b]-RATES.vat[a]||a.localeCompare(b));
+    mk("c2",s.ch2,{type:"bar",data:{labels:codes,datasets:[{data:codes.map(c=>RATES.vat[c]),backgroundColor:codes.map(c=>c===cc?p.c1:p.c5+"99"),borderRadius:3}]},
+      options:{scales:{x:{grid:{display:false},border:{color:p.line},ticks:{color:p.muted,autoSkip:false,maxRotation:90,minRotation:90,font:{size:10}}},
+        y:{beginAtZero:true,grid:{color:p.line},border:{display:false},ticks:{color:p.muted,callback:v=>v+"%"}}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>countryName(c[0].label),label:c=>` ${c.parsed.y}%`}}}}});
+  }else if(tool==="free"){
+    const inc=Math.max(0,num("income")),ex=Math.max(0,num("exp")),so=Math.max(0,num("soc")),tx=Math.max(0,num("tax"));
+    const calc=r=>{const profit=Math.max(0,r-ex),soc=profit*so/100,taxA=Math.max(0,profit-soc)*tx/100;return{profit,soc,taxA,net:profit-soc-taxA}};
+    const c=calc(inc),burden=inc>0?(1-c.net/inc)*100:0;
+    inputs=[[s.income,eur(inc)],[s.exp,eur(ex)],[s.soc,pct(so)],[s.tax,pct(tx)]];
+    kpis=[[s.netY,eur(c.net),1],[s.netM,eur(c.net/12)],[s.eff,pct(burden)]];
+    details=[[s.profit,eur(c.profit)],[s.socAmt,eur(c.soc)],[s.taxAmt,eur(c.taxA)]];
+    doughnut("c1",s.ch1,[s.lExp,s.lSoc,s.lTax,s.lNet],[Math.min(ex,inc),c.soc,c.taxA,c.net],[p.c5,p.c3,p.c4,p.c2],[inc>0?pct(c.net/inc*100):"–",s.lNet],p);
+    const fs=[0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5];
+    mk("c2",s.ch2,{type:"line",data:{labels:fs.map(f=>(f>=1?"+":"")+Math.round((f-1)*100)+"%"),datasets:[{label:s.lNet,data:fs.map(f=>calc(inc*f).net),borderColor:p.c2,backgroundColor:p.c2+"22",fill:true,tension:.25,
+      pointRadius:fs.map(f=>f===1?6:2),pointBackgroundColor:p.c2}]},
+      options:{scales:axes(p,{xTitle:s.lRev}),plugins:{legend:{display:false},tooltip:tipEur}}});
+  }else if(tool==="infl"){
+    const a=Math.max(0,num("amount")),y=Math.min(60,Math.max(0,Math.round(num("years")))),r=num("rate"),f=Math.pow(1+r/100,y);
+    inputs=[[s.country,countryName($("country").value)],[s.amount,eur(a)],[s.years,String(y)],[s.rate,pct(r)]];
+    kpis=[[s.real,eur(a/f),1],[s.need,eur(a*f)],[s.loss,pct(a>0?(1-1/f)*100:0)]];
+    const ys=Array.from({length:y+1},(_,i)=>i);
+    mk("c1",s.ch1,{type:"line",data:{labels:ys,datasets:[
+      {label:s.lNeed,data:ys.map(i=>a*Math.pow(1+r/100,i)),borderColor:p.c3,backgroundColor:p.c3+"22",tension:.25,pointRadius:0},
+      {label:s.lNom,data:ys.map(()=>a),borderColor:p.c5,borderDash:[6,5],pointRadius:0},
+      {label:s.lPow,data:ys.map(i=>a/Math.pow(1+r/100,i)),borderColor:p.c1,backgroundColor:p.c1+"22",fill:"origin",tension:.25,pointRadius:0}]},
+      options:{scales:axes(p,{xTitle:t.yr}),plugins:{legend:legend(p),tooltip:Object.assign({mode:"index",intersect:false},tipEur)},interaction:{mode:"index",intersect:false}}});
+  }else if(tool==="mort"){
+    const P=Math.max(0,num("amount")),R=Math.max(0,num("rate")),Y=Math.min(50,Math.max(0,num("years"))),n=Math.round(Y*12),i=R/1200;
+    let m=0;if(n>0)m=i===0?P/n:P*i/(1-Math.pow(1+i,-n));
+    const tot=m*n,intT=Math.max(0,tot-P);
+    inputs=[[s.amount,eur(P)],[s.rate,pct(R)],[s.years,String(Y)]];
+    kpis=[[s.pay,eur(m),1],[s.total,eur(tot)],[s.int,eur(intT)]];
+    doughnut("c1",s.ch1,[s.lPrin,s.lInt],[P,intT],[p.c1,p.c3],[tot>0?pct(intT/tot*100):"–",s.lInt],p);
+    let bal=P,cum=0;const lab=[0],bS=[P],cS=[0];
+    for(let k=1;k<=n;k++){const it=bal*i;cum+=it;bal-=(m-it);if(k%12===0||k===n){lab.push(k%12===0?k/12:+(k/12).toFixed(1));bS.push(Math.max(0,bal));cS.push(cum)}}
+    mk("c2",s.ch2,{type:"line",data:{labels:lab,datasets:[
+      {label:s.lBal,data:bS,borderColor:p.c1,backgroundColor:p.c1+"22",fill:true,tension:.2,pointRadius:0},
+      {label:s.lCum,data:cS,borderColor:p.c3,tension:.2,pointRadius:0}]},
+      options:{scales:axes(p,{xTitle:t.yr}),plugins:{legend:legend(p),tooltip:Object.assign({mode:"index",intersect:false},tipEur)},interaction:{mode:"index",intersect:false}}});
+  }else{
+    const pm=Math.max(0,num("pmt")),Y=Math.min(60,Math.max(0,Math.round(num("years")))),R=num("rate");
+    const fv=(rate,months)=>{const im=Math.pow(1+rate/100,1/12)-1;return months===0?0:(Math.abs(im)<1e-12?pm*months:pm*(Math.pow(1+im,months)-1)/im)};
+    const F=fv(R,Y*12),inv=pm*Y*12;
+    inputs=[[s.pmt,eur(pm)],[s.years,String(Y)],[s.rate,pct(R)]];
+    kpis=[[s.final,eur(F),1],[s.invested,eur(inv)],[s.gain,eur(F-inv)]];
+    const ys=Array.from({length:Y},(_,k)=>k+1),y0=[0].concat(ys);
+    mk("c1",s.ch1,{type:"bar",data:{labels:ys,datasets:[
+      {label:s.lInv,data:ys.map(k=>pm*12*k),backgroundColor:p.c1,stack:"a"},
+      {label:s.lGro,data:ys.map(k=>Math.max(0,fv(R,k*12)-pm*12*k)),backgroundColor:p.c2,stack:"a"}]},
+      options:{scales:axes(p,{stacked:true,xTitle:t.yr}),plugins:{legend:legend(p),tooltip:Object.assign({mode:"index",intersect:false},tipEur)}}});
+    mk("c2",s.ch2,{type:"line",data:{labels:y0,datasets:[
+      {label:`${s.lHigh} (${pct(R+2)})`,data:y0.map(k=>fv(R+2,k*12)),borderColor:p.c2,pointRadius:0,tension:.2},
+      {label:`${s.lBase} (${pct(R)})`,data:y0.map(k=>fv(R,k*12)),borderColor:p.c1,borderWidth:3,pointRadius:0,tension:.2},
+      {label:`${s.lLow} (${pct(R-2)})`,data:y0.map(k=>fv(R-2,k*12)),borderColor:p.c4,pointRadius:0,tension:.2}]},
+      options:{scales:axes(p,{xTitle:t.yr}),plugins:{legend:legend(p),tooltip:Object.assign({mode:"index",intersect:false},tipEur)},interaction:{mode:"index",intersect:false}}});
+  }
+  last={title:s.t,inputs,kpis,details};
+  $("kpis").innerHTML=kpis.map(k=>`<div class="kpi ${k[2]?"main":""}"><div class="l">${k[0]}</div><div class="v">${k[1]}</div></div>`).join("");
+  const d=$("details");
+  if(details){d.hidden=false;d.innerHTML=`<h3>${t.detailsT}</h3>`+details.map(r=>`<div class="row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("")}else d.hidden=true;
+  $("printHead").innerHTML=`<h1 style="color:#0b1b33;font-size:1.5rem;margin:0">EuroCalc – ${t.report}</h1><p style="color:#5a6b85;margin:2px 0 10px">${t.gen} ${new Intl.DateTimeFormat(LOCALE[lang],{dateStyle:"long"}).format(new Date())}</p>
+    <h2 style="font-size:1.1rem;margin:0">${s.t}</h2><table class="ptable">${inputs.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table>`;
+}
+
+/* print: always draw charts with the light palette */
+window.addEventListener("beforeprint",()=>{forceLight=true;document.documentElement.classList.add("force-light");if($("charts").children.length)compute()});
+window.addEventListener("afterprint",()=>{forceLight=false;document.documentElement.classList.remove("force-light");if($("charts").children.length)compute()});
+if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(last)compute()});
+
+/* ============ init ============ */
+(function(){
+  const nl=(navigator.language||"en").slice(0,2);if(I18N[nl])lang=nl;
+  const h0=location.hash.slice(1);if(I18N.en.tabs[h0])tool=h0;
+  $("lang").value=lang;
+  $("lang").onchange=e=>{lang=e.target.value;renderStatic();renderTool()};
+  $("privLink").onclick=()=>$("priv").showModal();
+  $("privClose").onclick=()=>$("priv").close();
+  window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(I18N.en.tabs[h]&&h!==tool){tool=h;renderStatic();renderTool()}});
+  loadRates().finally(()=>{renderStatic();renderTool()});
+})();
+</script>
+</body>
+</html>

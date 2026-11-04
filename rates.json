@@ -1,0 +1,15 @@
+{
+  "updated": "2026-11-04",
+  "source": "seed values from public ECB / Eurostat releases; replaced automatically by scripts/update_rates.py",
+  "deposit": { "value": 2.5, "period": "2026-10-29" },
+  "inflation_ea": { "value": 3.8, "period": "2026-09" },
+  "mortgage_ea": { "value": 3.6, "period": "2026-08" },
+  "inflation_country": {},
+  "vat_checked": "2026-11-04",
+  "vat": {
+    "AT": 20, "BE": 21, "BG": 20, "HR": 25, "CY": 19, "CZ": 21, "DK": 25,
+    "EE": 24, "FI": 25.5, "FR": 20, "DE": 19, "GR": 24, "HU": 27, "IE": 23,
+    "IT": 22, "LV": 21, "LT": 21, "LU": 17, "MT": 18, "NL": 21, "PL": 23,
+    "PT": 23, "RO": 21, "SK": 23, "SI": 22, "ES": 21, "SE": 25
+  }
+}
