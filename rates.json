@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-07",
+  "updated": "2026-11-08",
   "source": "ECB Data Portal (data-api.ecb.europa.eu), updated by scripts/update_rates.py",
   "deposit": {
     "value": 2.5,
